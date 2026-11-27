@@ -62,23 +62,25 @@ MRFF_PURE_PYTHON=1 pip install -e .
 
 ## Supported Kernels & Spectral Formulas
 
-For any isotropic shift-invariant kernel $k(x, y) = \kappa(\|\Lambda^{-1}(x - y)\|_2)$ with scalar or per-feature ARD lengthscale $\Lambda = \operatorname{diag}(\ell_1, \dots, \ell_d)$, Bochner's theorem yields a spherically symmetric spectral density in unit-lengthscale space:
+For any isotropic shift-invariant kernel $k(x, y) = \kappa(\lVert\Lambda^{-1}(x - y)\rVert_2)$ with scalar or per-feature ARD lengthscale $\Lambda = \mathrm{diag}(\ell_1, \dots, \ell_d)$, Bochner's theorem yields a spherically symmetric spectral density in unit-lengthscale space:
 
-$$\omega = r \cdot q, \qquad q \sim \operatorname{Uniform}(S^{d-1}), \quad r = \|\omega\|_2 \text{ independent of } q.$$
+$$
+\omega = r \cdot q, \qquad q \sim \mathrm{Uniform}(S^{d-1}), \quad r = \lVert\omega\rVert_2 \text{ independent of } q.
+$$
 
 ORF replaces i.i.d. directions $q$ with rows of stacked $d \times d$ Haar-distributed orthogonal matrices $Q \in O(d)$ (sign-corrected QR per Mezzadri, 2007), preserving the exact marginal distribution of every $\omega_i$ (zero bias) while reducing variance. SORF and Fastfood apply the same radial samplers in the zero-padded dimension $p = 2^{\lceil \log_2 d \rceil}$.
 
 ### Shift-Invariant Kernels
 
-| Class | String alias(es) | Kernel $k(x, y)$ (unit $\ell$) | Radial length $r = \|\omega\|_2$ ($s \sim \chi_d$) | ORF / SORF / Fastfood |
+| Class | String alias(es) | Kernel $k(x, y)$ (unit $\ell$) | Radial length $r = \lVert\omega\rVert_2$ ($s \sim \chi_d$) | ORF / SORF / Fastfood |
 |---|---|---|---|---|
-| `RBF` | `"rbf"`, `"gaussian"` | $\exp\!\left(-\frac{1}{2}\|x-y\|_2^2\right)$ | $r = s$ | Yes |
-| `Matern(nu)` | `"matern"`, `"matern12"`, `"matern32"`, `"matern52"` | $\frac{2^{1-\nu}}{\Gamma(\nu)}(\sqrt{2\nu}\|x-y\|_2)^\nu K_\nu(\sqrt{2\nu}\|x-y\|_2)$ | $r = \dfrac{s}{\sqrt{g}},\; g \sim \operatorname{Gamma}(\nu, \text{scale}=\frac{1}{\nu})$ | Yes |
-| `Exponential` | `"exponential"`, `"l2_laplacian"` | $\exp(-\|x-y\|_2)$ (Matérn $\nu=\frac{1}{2}$) | $r = \dfrac{s}{\sqrt{g}},\; g \sim \operatorname{Gamma}(\frac{1}{2}, \text{scale}=2)$ | Yes |
-| `RationalQuadratic(alpha)` | `"rational_quadratic"`, `"rq"` | $\left(1 + \frac{\|x-y\|_2^2}{2\alpha}\right)^{-\alpha}$ | $r = s\sqrt{\tau},\; \tau \sim \operatorname{Gamma}(\alpha, \text{scale}=\frac{1}{\alpha})$ | Yes |
-| `Cauchy` | `"cauchy"`, `"cauchy_l2"` | $\left(1 + \|x-y\|_2^2\right)^{-1}$ | $r = s\sqrt{2\tau},\; \tau \sim \operatorname{Exp}(1)$ | Yes |
-| `InverseMultiquadric(beta)` | `"imq"`, `"inverse_multiquadric"` | $\left(1 + \|x-y\|_2^2\right)^{-\beta}$ | $r = s\sqrt{2\tau},\; \tau \sim \operatorname{Gamma}(\beta, \text{scale}=1)$ | Yes |
-| `LaplacianL1` | `"laplacian_l1"`, `"laplacian"` | $\exp(-\|x-y\|_1)$ | i.i.d. $\omega_j \sim \operatorname{Cauchy}(0, 1)$ *(non-isotropic)* | `RandomFourierFeatures` only |
+| `RBF` | `"rbf"`, `"gaussian"` | $\exp\left(-\frac{1}{2}\lVert x-y\rVert_2^2\right)$ | $r = s$ | Yes |
+| `Matern(nu)` | `"matern"`, `"matern12"`, `"matern32"`, `"matern52"` | $\frac{2^{1-\nu}}{\Gamma(\nu)}(\sqrt{2\nu}\lVert x-y\rVert_2)^\nu K_\nu(\sqrt{2\nu}\lVert x-y\rVert_2)$ | $r = \dfrac{s}{\sqrt{g}}, \quad g \sim \mathrm{Gamma}\left(\nu, \text{scale}=\frac{1}{\nu}\right)$ | Yes |
+| `Exponential` | `"exponential"`, `"l2_laplacian"` | $\exp(-\lVert x-y\rVert_2)$ (Matérn $\nu=\frac{1}{2}$) | $r = \dfrac{s}{\sqrt{g}}, \quad g \sim \mathrm{Gamma}\left(\frac{1}{2}, \text{scale}=2\right)$ | Yes |
+| `RationalQuadratic(alpha)` | `"rational_quadratic"`, `"rq"` | $\left(1 + \frac{\lVert x-y\rVert_2^2}{2\alpha}\right)^{-\alpha}$ | $r = s\sqrt{\tau}, \quad \tau \sim \mathrm{Gamma}\left(\alpha, \text{scale}=\frac{1}{\alpha}\right)$ | Yes |
+| `Cauchy` | `"cauchy"`, `"cauchy_l2"` | $\left(1 + \lVert x-y\rVert_2^2\right)^{-1}$ | $r = s\sqrt{2\tau}, \quad \tau \sim \mathrm{Exp}(1)$ | Yes |
+| `InverseMultiquadric(beta)` | `"imq"`, `"inverse_multiquadric"` | $\left(1 + \lVert x-y\rVert_2^2\right)^{-\beta}$ | $r = s\sqrt{2\tau}, \quad \tau \sim \mathrm{Gamma}(\beta, \text{scale}=1)$ | Yes |
+| `LaplacianL1` | `"laplacian_l1"`, `"laplacian"` | $\exp(-\lVert x-y\rVert_1)$ | i.i.d. $\omega_j \sim \mathrm{Cauchy}(0, 1)$ *(non-isotropic)* | `RandomFourierFeatures` only |
 
 > **Why `LaplacianL1` is refused by ORF / SORF / Fastfood**: For $d > 1$, the $L_1$ Laplacian spectral density factors across coordinates and is not rotationally invariant. Rotating it with a Haar orthogonal matrix biases the estimator away from $L_1$, so `OrthogonalRandomFourierFeatures`, `StructuredOrthogonalRandomFourierFeatures`, and `FastfoodFeatures` explicitly raise a `TypeError` directing you to `Exponential` ($L_2$) or `RandomFourierFeatures`.
 
@@ -88,9 +90,9 @@ ORF replaces i.i.d. directions $q$ with rows of stacked $d \times d$ Haar-distri
 |---|---|---|
 | `ArcCosineOrthogonalFeatures` | Arc-Cosine order 0 ($1 - \theta/\pi$ step or $1 - 2\theta/\pi$ sign) and order 1 (ReLU) | `exact_arccosine_matrix` |
 | `OrthogonalRandomProjection` | Linear dot product $x^\top y$ (`mode="orthogonal" \| "sorf" \| "iid"`) | `X @ Y.T` |
-| `CountSketchFeatures` | Linear dot product $x^\top y$ in $O(\operatorname{nnz}(X))$ | `X @ Y.T` |
-| `TensorSketchFeatures` | Polynomial $(\gamma x^\top y + c)^q$ in $O(q(\operatorname{nnz}(X) + M \log M))$ | `exact_polynomial_matrix` |
-| `AnovaRandomFeatures` | Degree-$q$ ANOVA and All-Subsets $\prod_j (1 + x_j y_j)$ | `exact_anova_matrix`, `exact_all_subsets_matrix` |
+| `CountSketchFeatures` | Linear dot product $x^\top y$ in $O(\mathrm{nnz}(X))$ | `X @ Y.T` |
+| `TensorSketchFeatures` | Polynomial $(\gamma x^\top y + c)^q$ in $O(q(\mathrm{nnz}(X) + M \log M))$ | `exact_polynomial_matrix` |
+| `AnovaRandomFeatures` | Degree $q$ ANOVA and All-Subsets $\prod_j (1 + x_j y_j)$ | `exact_anova_matrix`, `exact_all_subsets_matrix` |
 | `HomogeneousKernelMap` | Additive $\chi^2$, Histogram Intersection, Hellinger (non-negative inputs) | `exact_chi2_matrix`, `exact_intersection_matrix`, `exact_hellinger_matrix` |
 
 ---
@@ -105,8 +107,8 @@ ORF replaces i.i.d. directions $q$ with rows of stacked $d \times d$ Haar-distri
 | `RandomFourierFeatures` | $O(M d)$ | Yes | Preserved | Passing |
 | `ArcCosineOrthogonalFeatures` | $O(M d)$ | Yes | Preserved | Passing |
 | `OrthogonalRandomProjection` | $O(M d)$ or $O(M \log p)$ | Yes | Preserved | Passing |
-| `CountSketchFeatures` | $O(\operatorname{nnz}(x))$ | Yes | Preserved | Passing |
-| `TensorSketchFeatures` | $O(q(\operatorname{nnz}(x) + M \log M))$ | Yes | Preserved | Passing |
+| `CountSketchFeatures` | $O(\mathrm{nnz}(x))$ | Yes | Preserved | Passing |
+| `TensorSketchFeatures` | $O(q(\mathrm{nnz}(x) + M \log M))$ | Yes | Preserved | Passing |
 | `AnovaRandomFeatures` | $O(q \cdot d \cdot M)$ | Yes | Preserved | Passing |
 | `HomogeneousKernelMap` | $O((2k+1) d)$ | Yes | Preserved | Passing |
 | `RandomFeatureRegressor` | $O(B \cdot \text{cost}(\phi))$ RAM | Yes | Yes | Passing |
@@ -298,7 +300,7 @@ Measured on Apple Silicon (`arm64-apple-darwin`, `c:neon` backend):
 | **ARD lengthscales** | Yes (scalar or per-feature vector on all shift-invariant kernels) | No (single scalar `gamma` only) |
 | **Scikit-learn compliance** | Passes 100% of official `check_estimator` across all 12 estimator classes; never mutates `__init__` params; preserves `float32`/`float64` | Mutates `self.n_components` inside `fit()`; no `n_features_in_`, `feature_names_in_`, `get_feature_names_out`, `__sklearn_tags__`, or `float32` preservation |
 | **Haar orthogonal QR** | Sign-corrected QR (`sign(diag(R))`, Mezzadri 2007) — exact Haar measure on $O(d)$ | Raw `scipy.linalg.qr_multiply(W, S)` without diagonal sign correction |
-| **SORF radial scaling** | Exact radial draw in padded dim $p$ (`chi_p` for RBF; generalizes to all isotropic kernels) | Fixed deterministic $\sqrt{p}$ scaling (RBF-only, larger small-$d$ bias) |
+| **SORF radial scaling** | Exact radial draw in padded dim $p$ (`chi_p` for RBF; generalizes to all isotropic kernels) | Fixed deterministic $\sqrt{p}$ scaling (RBF-only, larger bias at small $d$) |
 | **Non-Fourier / Sketch families** | `ArcCosineOrthogonalFeatures`, `OrthogonalRandomProjection`, `FastfoodFeatures`, `CountSketchFeatures`, `TensorSketchFeatures`, `AnovaRandomFeatures`, `HomogeneousKernelMap` | `FastFood`, `CountSketch`, `TensorSketch`, `RandomKernel`, `SubfeatureRandomKernel`, `RandomMaclaurin`, `SignedCirculantRandomMatrix`, `MB`, `AdditiveChi2Sampler`, `CompactRandomFeature` |
 | **Online linear solvers** | `RandomFeatureRegressor` & `RandomFeatureClassifier` (`adam`, `sgd`, `adagrad`, $O(N)$-memory `saga`, `partial_fit`) | Cython `SGD`, `SAGA`, `SDCA`, `AdaGrad`, `Adam`, `DoublySGD`, `SparseMB` |
 | **Typing & test suite** | PEP 561 typed (`py.typed`), `ty` + `ruff` clean, 1,208 passing tests | Untyped Python 3.6 style |
@@ -328,7 +330,9 @@ At small dimension ($d = 4$, 80-run average), `mrff`'s exact $\chi_p$ radial sca
 ### Migrating from `pyrfm` to `mrff`
 
 1. **Bandwidth (`gamma` $\leftrightarrow$ `lengthscale`)**:
+
    $$\gamma = \frac{1}{2\ell^2} \iff \ell = \frac{1}{\sqrt{2\gamma}}$$
+
    For example, `pyrfm`'s default `gamma=0.5` equals `mrff`'s default `lengthscale=1.0`.
 2. **Phase embedding (`use_offset` $\leftrightarrow$ `use_cos_sin`)**:
    `pyrfm` defaults to `use_offset=False` (`[cos, sin]`). In `mrff`, pass `use_cos_sin=True` to get the same phase-free `[cos, sin]` feature map (default is `use_cos_sin=False` to match `sklearn.kernel_approximation.RBFSampler` and support `n_components=1`).
